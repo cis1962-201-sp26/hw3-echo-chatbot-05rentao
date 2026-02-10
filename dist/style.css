@@ -10,6 +10,14 @@ body {
 	min-height: 100vh;
 	background: #f6f8fb;
 	color: #0f172a;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
+
+textarea {
+	width: 100%;
+}
+
 
 /* TODO: Implement styles */
