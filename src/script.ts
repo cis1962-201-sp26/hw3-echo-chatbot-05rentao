@@ -12,6 +12,7 @@ function simulateBotResponse(userMessage: Message['content']) {
     setTimeout(() => {
         const botReply : string = `You said: "${userMessage}"`;
         sendMessage('Echo', botReply);
+        renderMessages(currentChat.messages);
     }, 500);
 }
 
@@ -21,7 +22,9 @@ function simulateBotResponse(userMessage: Message['content']) {
  * @param {string} message - The message content
  */
 function sendMessage(role: string, message: string) {
-    // TODO: Implement Me!
+    const newMessage: Message = { role: role, content: message };
+    currentChat.messages.push(newMessage);
+    localStorage.setItem("currentChat", JSON.stringify(currentChat));
 }
 
 /**
@@ -29,7 +32,21 @@ function sendMessage(role: string, message: string) {
  * @param {{role: string, content: string}[]} messages - The messages to render
  */
 function renderMessages(messages: Message[]) {
-    // TODO: Implement Me!
+    const container = document.getElementById('chat-history');
+    
+    if (container) {
+        container.innerHTML = "";
+        messages.forEach(function({role, content}) {
+            let newText: HTMLElement = document.createElement('p');
+            if (role === 'User') {
+                newText.className = 'user-text';
+            } else if (role === 'Echo') {
+                newText.className = 'chat-text';
+            }
+            newText.textContent = content;
+            container.appendChild(newText);
+        });
+    }
 }
 
 /**
@@ -40,7 +57,9 @@ function renderMessages(messages: Message[]) {
  * - Always render the chat list and messages after creating a new chat
  */
 function createNewChat() {
-    // TODO: Implement Me!
+    currentChat = { messages: [] };
+    localStorage.setItem('currentChat', JSON.stringify(currentChat));
+    renderMessages(currentChat.messages);
 }
 
 /**
@@ -51,12 +70,28 @@ function createNewChat() {
  * - If no chat exists, create a new chat
  */
 function initializeApp() {
-    // TODO: Implement Me!
+    const chat: string | null = localStorage.getItem("currentChat");
+    currentChat = (chat) ? JSON.parse(chat) : { messages: [] };
+    renderMessages(currentChat.messages);
 }
 
-// TODO: Create an event listener to reset the chat messages when the "New Chat" button is clicked
+const resetBtn: HTMLElement | null = document.getElementById('reset');
+if (resetBtn) {
+    resetBtn.addEventListener('click', createNewChat);
+}
 
-// TODO: Create an event listener to handle sending messages when the user submits the chat input form
+const sendBtn: HTMLElement | null = document.getElementById('send');
+const messageInput = document.getElementById('message') as HTMLTextAreaElement | null;
+
+if (sendBtn && messageInput) {
+    sendBtn.addEventListener('click', function() {
+        const userText = messageInput.value;
+        sendMessage("User", userText);
+        renderMessages(currentChat.messages);
+        messageInput.value = ""; 
+        simulateBotResponse(userText);
+    });
+}
 
 // Initialize the app upon reload
 initializeApp();
