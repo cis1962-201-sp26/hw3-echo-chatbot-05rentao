@@ -1,6 +1,6 @@
-type Message = { role: string; content: string; };
+type Message = { role: string; content: string };
 
-let currentChat : {messages: Message[]} = {messages: []};
+let currentChat: { messages: Message[] } = { messages: [] };
 
 /**
  * Simulates a bot response to a user message
@@ -10,7 +10,7 @@ let currentChat : {messages: Message[]} = {messages: []};
 function simulateBotResponse(userMessage: Message['content']) {
     // Simulate bot response with a delay
     setTimeout(() => {
-        const botReply : string = `You said: "${userMessage}"`;
+        const botReply: string = `You said: "${userMessage}"`;
         sendMessage('Echo', botReply);
         renderMessages(currentChat.messages);
     }, 500);
@@ -24,7 +24,7 @@ function simulateBotResponse(userMessage: Message['content']) {
 function sendMessage(role: string, message: string) {
     const newMessage: Message = { role: role, content: message };
     currentChat.messages.push(newMessage);
-    localStorage.setItem("currentChat", JSON.stringify(currentChat));
+    localStorage.setItem('currentChat', JSON.stringify(currentChat));
 }
 
 /**
@@ -33,11 +33,11 @@ function sendMessage(role: string, message: string) {
  */
 function renderMessages(messages: Message[]) {
     const container = document.getElementById('chat-history');
-    
+
     if (container) {
-        container.innerHTML = "";
-        messages.forEach(function({role, content}) {
-            let newText: HTMLElement = document.createElement('p');
+        container.innerHTML = '';
+        messages.forEach(({ role, content }) => {
+            const newText: HTMLElement = document.createElement('p');
             if (role === 'User') {
                 newText.className = 'user-text';
             } else if (role === 'Echo') {
@@ -45,6 +45,10 @@ function renderMessages(messages: Message[]) {
             }
             newText.textContent = content;
             container.appendChild(newText);
+        });
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth',
         });
     }
 }
@@ -70,8 +74,8 @@ function createNewChat() {
  * - If no chat exists, create a new chat
  */
 function initializeApp() {
-    const chat: string | null = localStorage.getItem("currentChat");
-    currentChat = (chat) ? JSON.parse(chat) : { messages: [] };
+    const chat: string | null = localStorage.getItem('currentChat');
+    currentChat = chat ? JSON.parse(chat) : { messages: [] };
     renderMessages(currentChat.messages);
 }
 
@@ -81,15 +85,31 @@ if (resetBtn) {
 }
 
 const sendBtn: HTMLElement | null = document.getElementById('send');
-const messageInput = document.getElementById('message') as HTMLTextAreaElement | null;
+const messageInput = document.getElementById(
+    'message',
+) as HTMLInputElement | null;
 
 if (sendBtn && messageInput) {
-    sendBtn.addEventListener('click', function() {
-        const userText = messageInput.value;
-        sendMessage("User", userText);
+    const sendUserMessage = () => {
+        if (messageInput.value === '') {
+            return;
+        }
+
+        const userText = messageInput.value.trim();
+        if (!userText) return;
+        sendMessage('User', userText);
         renderMessages(currentChat.messages);
-        messageInput.value = ""; 
+        messageInput.value = '';
         simulateBotResponse(userText);
+    };
+
+    sendBtn.addEventListener('click', sendUserMessage);
+
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendUserMessage();
+        }
     });
 }
 

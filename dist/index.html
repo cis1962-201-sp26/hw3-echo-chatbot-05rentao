@@ -12,17 +12,18 @@
 			<h1>💬 ChatJS</h1>
 			<p>Welcome to ChatJS, where you speak, and then I speak, back, at you. I speak back at you. Then you can speak back to me, or not.</p>
 			
-			<div class="chat-history">
+			<div id="chat-history" class="chat-history">
 				<p class="user-text"> RAHHHH </p>
 				<p class="chat-text"> AHHHHH </p>
 			</div> 
 
-			<textarea id="message" name="message" rows="4" cols="50">
+			<form id="chat-form">
+				<input id="message" name="message" type="text" />
 
-			</textarea>
-
-
-			<footer>copy right Ren Tao</footer>
+				<button id="send" type="button">Send</button>
+				<button id="reset" type="button">New Chat</button>
+			</form>
+			<footer>Copy right Ren Tao</footer>
 			</div>
 		</main>
 	</body>
